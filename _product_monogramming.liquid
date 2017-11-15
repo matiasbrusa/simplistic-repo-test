@@ -1,0 +1,302 @@
+{% assign monogramming = false %}
+{% assign monogramColorLight = false %}
+{% for tag in product.tags %}
+  {% if tag == 'monogram' %}
+    {% assign monogramming = true %}
+  {% elsif tag == 'monogram-2-lines' %}
+	{% assign monogramming = true %}
+	{% assign monogramming2lines = true %}
+  {% endif %}
+  {% if tag == "monogram-color-light" %}
+	{% assign monogramColorLight = true %}
+  {% endif %}
+{% endfor %}
+
+{% if monogramming %}
+{% assign imageBackground = false %}
+{% for image in product.images %}
+  {% if image.alt contains "engraving-background" %}
+    {% assign imageBackground = image %}
+  {% endif %}
+{% endfor %}
+
+<script>
+  $(document).ready(function(){
+    $("#AddToCartForm #AddToCart").on('click', function(event){
+      if(($("#mg-hidden-embroidery-type").val() != "" && $("#mg-hidden-font").val() != "" && $("#mg-hidden-letters").val() != "") || $(".swatch input:checked").val().toLowerCase() == "none" || $(".swatch input:checked").val().toLowerCase() == "logo"){
+        if($(".swatch input:checked").val().toLowerCase() == "logo" && $("#mg-logo").val() == "" ){
+          event.preventDefault();
+        }
+      }else{
+        event.preventDefault();
+        var conf = {};
+        $.extend(conf, fancyboxSettings, {href: '#monogramming-pop-up'{% if settings.promo_popup_bg_color == 'rgba(0,0,0,0)' and settings.promo_popup_bg_overlay == '' %}, afterLoad: function () {$(".fancybox-skin").addClass("transparent");} {% endif %}, afterShow: function(){if($(".mg-step-1 li.mg-selected").length == 0){$(".mg-step-1 li").first().find('a').click();}} });
+        $.fancybox(conf);
+      }
+    });
+  });
+</script>
+
+{{ 'jquery.fancybox.pack.js' | asset_url | script_tag }}
+{{ 'jquery.fancybox.css' | asset_url | stylesheet_tag }}
+
+<link href="https://fonts.googleapis.com/css?family=Graduate|Roboto+Slab|Merriweather|Gravitas+One" rel="stylesheet">
+<script type="text/javascript" src="//fast.fonts.net/jsapi/aacd1ca0-0032-4096-b723-f28d92ceaa8d.js?"></script>
+
+{{ 'monogramming.scss' | asset_url | stylesheet_tag }}
+{{ 'monogramming.js' | asset_url | script_tag }}
+{% comment %}
+<label>
+  <input type="checkbox" class="add-monogram"> Add a monogram or name to item
+</label>
+{% endcomment %}
+<input type="hidden" name="properties[Laser Engraving]" value="" id="mg-hidden-embroidery-type">
+{% comment %}<input type="hidden" name="properties[Font Color]" value="" id="mg-hidden-font-color">{% endcomment %}
+<input type="hidden" name="properties[Font]" value="" id="mg-hidden-font">
+<input type="hidden" name="properties[Letters]" value="" id="mg-hidden-letters">
+
+<div class="mg-logo-container mg-hide">
+  <input type="file" name="properties[Logo]" id="mg-logo">
+</div>
+
+<!-- Promotion Popup -->
+<div class="mg-hide">
+  <div id="monogramming-pop-up">
+    <div id="monogramming-pop-up-wrapper">
+      <div class="mg-title">
+        <span>Laser Engrave</span>
+      </div>
+      <div class="mg-wrap">
+        <div class="mg-grid mg-steps mg-grid-full mg-table">
+          <div class="mg-grid__item mg-one-third mg-small--one-whole mg-step-1 mg-table-cell">
+            <h1><a href="javascript:void(0);"><span>1</span> Select Laser Engraving Style</a></h1>
+            <div class="mg-step-content">
+              <ul>
+                <li>
+                  <a href="javascript:void(0);" class="mg-monogram-style  mg-monogram-name" data-style="mg-style-7" data-min-letters="1" data-max-letters="25">
+                    <img src="{{ "mg-embroidery-name.png" | asset_url }}"><span>Name/Text</span>
+                  </a>
+                </li>
+                {% comment %}<li>
+                  <a href="javascript:void(0);" class="mg-monogram-style mg-monogram-initials" data-style="mg-style-5" data-max-letters="3">
+                    <img src="{{ "mg-embroidery-styled-initials.png" | asset_url }}"><span>Styled Initials</span>
+                  </a>
+                </li>{% endcomment %}
+                <li>
+                  <a href="javascript:void(0);" class="mg-monogram-style" data-style="mg-style-6" data-max-letters="3" data-max-letters-second="25">
+                    <img src="{{ "mg-embroidery-monogram.png" | asset_url }}"><span>Monogram</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          {% comment %}
+          <div class="mg-grid__item mg-three-tenths mg-small--one-whole mg-step-2 mg-table-cell">
+            <h1><a href="javascript:void(0);"><span>2</span> Choose Color</a></h1>
+            <div class="mg-step-content">
+              <div class="mg-grid mg-grid-full" id="mg-colors">
+                <div class="mg-grid__item mg-one-half">
+                  <ul>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-1">
+                        <img src="{{ "mg-color-black.png" | asset_url }}"><span>Black</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-2">
+                        <img src="{{ "mg-color-white.png" | asset_url }}"><span>White</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-3">
+                        <img src="{{ "mg-color-grey.png" | asset_url }}"><span>Grey</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-4">
+                        <img src="{{ "mg-color-pink.png" | asset_url }}"><span>Pink</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-5">
+                        <img src="{{ "mg-color-hot-pink.png" | asset_url }}"><span>Hot Pink</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-6">
+                        <img src="{{ "mg-color-magenta.png" | asset_url }}"><span>Magenta</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-7">
+                        <img src="{{ "mg-color-light-purple.png" | asset_url }}"><span>Light Purple</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-8">
+                        <img src="{{ "mg-color-purple.png" | asset_url }}"><span>Purple</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-9">
+                        <img src="{{ "mg-color-light-blue.png" | asset_url }}"><span>Light Blue</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-10">
+                        <img src="{{ "mg-color-royal-blue.png" | asset_url }}"><span>Royal Blue</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-11">
+                        <img src="{{ "mg-color-navy-blue.png" | asset_url }}"><span>Navy Blue</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="mg-grid__item mg-one-half">
+                  <ul>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-12">
+                        <img src="{{ "mg-color-green.png" | asset_url }}"><span>Green</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-13">
+                        <img src="{{ "mg-color-tan.png" | asset_url }}"><span>Tan</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-14">
+                        <img src="{{ "mg-color-yellow.png" | asset_url }}"><span>Yellow</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-15">
+                        <img src="{{ "mg-color-orange.png" | asset_url }}"><span>Orange</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-16">
+                        <img src="{{ "mg-color-red.png" | asset_url }}"><span>Red</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-17">
+                        <img src="{{ "mg-color-brown.png" | asset_url }}"><span>Brown</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-18">
+                        <img src="{{ "mg-color-ivory.png" | asset_url }}"><span>Ivory</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-19">
+                        <img src="{{ "mg-color-metallic-bronze.png" | asset_url }}"><span>Metallic Bronze</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-20">
+                        <img src="{{ "mg-color-metallic-copper.png" | asset_url }}"><span>Metallic Copper</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-21">
+                        <img src="{{ "mg-color-metallic-gold.png" | asset_url }}"><span>Metallic Gold</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="mg-monogram-color" data-color="mg-color-22">
+                        <img src="{{ "mg-color-metallic-silver.png" | asset_url }}"><span>Metallic Silver</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endcomment %}
+          <div class="mg-grid__item mg-one-third mg-small--one-whole mg-step-3 mg-table-cell">
+            <h1><a href="javascript:void(0);"><span>2</span> Choose Font</a></h1>
+            <div class="mg-step-content">
+              <ul>
+                <li>
+                  <a href="javascript:void(0);" class="mg-monogram-font-family" data-font="mg-font-1">
+                    <img src="{{ "mg-font-arial.png" | asset_url }}"><span>Arial</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="javascript:void(0);" class="mg-monogram-font-family" data-font="mg-font-2">
+                    <img src="{{ "mg-font-brush-script.png" | asset_url }}"><span>Brush Script</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="javascript:void(0);" class="mg-monogram-font-family" data-font="mg-font-3">
+                    <img src="{{ "mg-font-diana-script.png" | asset_url }}"><span>Diana Script</span>
+                  </a>
+                </li>
+                {% comment %}<li>
+                  <a href="javascript:void(0);" class="mg-monogram-font-family" data-font="mg-font-4">
+                    <img src="{{ "mg-font-disney-park.png" | asset_url }}"><span>Fun Times</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="javascript:void(0);" class="mg-monogram-font-family" data-font="mg-font-5">
+                    <img src="{{ "mg-font-cochise.png" | asset_url }}"><span>Gotta Have Dak</span>
+                  </a>
+                </li>{% endcomment %}
+                <li>
+                  <a href="javascript:void(0);" class="mg-monogram-font-family" data-font="mg-font-6">
+                    <img src="{{ "mg-font-graduate.png" | asset_url }}"><span>Graduate</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="javascript:void(0);" class="mg-monogram-font-family" data-font="mg-font-7">
+                    <img src="{{ "mg-font-roboto-slab.png" | asset_url }}"><span>Roboto</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="javascript:void(0);" class="mg-monogram-font-family" data-font="mg-font-8">
+                    <img src="{{ "mg-font-times.png" | asset_url }}"><span>Times New Roman</span>
+                  </a>
+                </li>
+                
+                <li>
+                  <a href="javascript:void(0);" class="mg-monogram-font-family" data-font="mg-font-9">
+                    <img src="{{ "mg-font-merriweather.jpg" | asset_url }}"><span>Merriweather</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="javascript:void(0);" class="mg-monogram-font-family" data-font="mg-font-10">
+                    <img src="{{ "mg-font-gravitas-one.jpg" | asset_url }}"><span>Gravitas One</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="mg-grid__item mg-one-third mg-small--one-whole mg-step-4 mg-table-cell">
+            <h1><a href="javascript:void(0);"><span>3</span> Add up to <span class="mg-max-letters">3</span> Letters</a></h1>
+            <div class="mg-step-content">
+              <input type="text" id="mg-letters" class="mg-letters" placeholder="ABC" maxlength="3">
+              {% if monogramming2lines %}
+              <input type="text" id="mg-letters-2" class="mg-letters" placeholder="ABC (optional)" maxlength="3">
+              {% endif %}
+              <div id="mg-preview" {% if imageBackground %}style="background-image:url({{ imageBackground.src | img_url: "350x350", crop: 'center' }});"{% endif %}>
+                <span class="mg-container {% if monogramming2lines %}mg-2-lines{% endif %} {% if monogramColorLight %}mg-color-light{% endif %}">
+                  <span style="display:table;width:100%;height:100%;">
+                    <span style="display:table-cell;vertical-align:middle;" class="mg-container-inner">
+                    </span>
+                  </span>
+                </span>
+              </div>
+              {% comment %}<a href="javascipt:void(0);" class="mg-btn mg-btn-preview">Preview</a>{% endcomment %}
+              <a href="javascript:void(0);" class="mg-btn mg-btn-confirm">Confirm</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
