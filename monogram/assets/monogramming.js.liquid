@@ -1,0 +1,304 @@
+/*if(typeof jQuery=='undefined') {
+  var headTag = document.getElementsByTagName("head")[0];
+  var jqTag = document.createElement('script');
+  jqTag.type = 'text/javascript';
+  jqTag.src = '{{ 'jquery.min.js' | asset_url }}';
+  jqTag.onload = myJQueryCode;
+  headTag.appendChild(jqTag);
+} else {
+  myJQueryCode();
+}*/
+
+var fancyboxSettings = {
+  hideOnContentClick: true,
+  titleShow : true,
+  padding : 0,
+  margin:[40,20,20,20],
+  nextEffect: 'fade',
+  prevEffect: 'fade',
+  closeEffect : 'fade',
+  autoCenter: true,
+  helpers: {
+    overlay: {speedOut : 500, locked: true}
+  },
+  afterLoad: function() {
+  	$('html').addClass('fancybox-lock');
+  },
+  afterShow: function() {
+    setTimeout(function(){
+    	//$.fancybox.update();
+    }, 200);
+  }
+};
+
+//function myJQueryCode() {
+  jQuery(function($) {
+    var maxLetters = 3;
+    var maxLettersSecond = 3;
+    var minLetters = 3;
+    var previewDefault = "abc";
+    
+    var mgEmbroideryType = "";
+    //var mgFontColor = "";
+    var mgFont = "";
+    var mgPrevFont = "";
+    var mgLetters = "";
+    
+    $(document).ready(function(){
+      
+      /*if($(".swatch.personalize").length > 0){
+        //$(document).on("change", ".add-monogram", function(event){
+        $(document).on("click", ".swatch.personalize .swatch-element input", function(event){
+
+          if($(this).parent().hasClass("laser-engrave") || $(this).parent().hasClass("laser-engrave-text")){
+            var conf = {};
+            //var bg = $(".swatch-element.color").closest('.swatch').find('input:checked+.swatch-element').find('label').css('background-image');
+            //bg = bg.replace('url(','').replace(')','').replace(/\"/gi, "");
+            //$("#mg-preview").css('background-image', bg);
+
+            $.extend(conf, fancyboxSettings, {href: '#monogramming-pop-up'{% if settings.promo_popup_bg_color == 'rgba(0,0,0,0)' and settings.promo_popup_bg_overlay == '' %}, afterLoad: function () {$(".fancybox-skin").addClass("transparent");} {% endif %}, afterShow: function(){if($(".mg-step-1 li.mg-selected").length == 0){$(".mg-step-1 li").first().find('a').click();}} });
+            $.fancybox(conf);
+          }else{
+            //mgEmbroideryType = "";
+            //mgFontColor = "";
+            //mgFont = "";
+            //mgLetters = "";
+            $("#mg-hidden-embroidery-type").val("");
+            //$("#mg-hidden-font-color").val(mgFontColor);
+            $("#mg-hidden-font").val("");
+            $("#mg-hidden-letters").val("");
+          }
+          if($(this).parent().hasClass("logo")){
+            $(".mg-logo-container").show();
+          }else{
+            $("#mg-logo").val('');
+            $(".mg-logo-container").hide();
+          }
+        });
+      }else{*/
+        $( ".swatch input" ).on( "click", function() {
+          //if(($("#mg-hidden-embroidery-type").val() != "" && $("#mg-hidden-font").val() != "" && $("#mg-hidden-letters").val() != "") || $(".swatch input:checked").val().toLowerCase() == "none" ){
+          if($(".swatch input:checked").val().toLowerCase() == "none" || $(".swatch input:checked").val().toLowerCase() == "logo" ){
+            $("#mg-hidden-embroidery-type").val("");
+            //$("#mg-hidden-font-color").val(mgFontColor);
+            $("#mg-hidden-font").val("");
+            $("#mg-hidden-letters").val("");
+          }else{
+            //event.preventDefault();
+            var conf = {};
+            $.extend(conf, fancyboxSettings, {href: '#monogramming-pop-up'{% if settings.promo_popup_bg_color == 'rgba(0,0,0,0)' and settings.promo_popup_bg_overlay == '' %}, afterLoad: function () {$(".fancybox-skin").addClass("transparent");} {% endif %}, afterShow: function(){if($(".mg-step-1 li.mg-selected").length == 0){$(".mg-step-1 li").first().find('a').click();}} });
+            $.fancybox(conf);
+          }
+          
+          if($(this).parent().hasClass("logo")){
+            $(".mg-logo-container").show();
+          }else{
+            $("#mg-logo").val('');
+            $(".mg-logo-container").hide();
+          }
+        });
+      /*}*/
+      
+      
+      $(document).on("click", ".mg-monogram-style", function(event){
+        $(".mg-monogram-style").parent().removeClass('mg-selected');
+        $(this).parent().addClass('mg-selected');
+        
+        if($(this).hasClass("mg-monogram-font")){
+          if(mgPrevFont == ""){
+            mgPrevFont = $(".mg-step-3 .mg-selected");
+          }
+          $(".mg-step-3").addClass('mg-step-blocked');
+          $(".mg-step-3 .mg-selected").removeClass('mg-selected');
+          $("#mg-preview").removeClass (function (index, className) {
+            return (className.match (/(^|\s)mg-font-\S+/g) || []).join(' ');
+          });
+          
+          mgFont = "";
+        }else if($(this).hasClass("mg-unique-font")){
+          if(mgPrevFont == ""){
+            mgPrevFont = $(".mg-step-3 .mg-selected");
+          }
+          $(".mg-step-3").addClass('mg-step-blocked');
+          $(".mg-step-3 .mg-selected").removeClass('mg-selected');
+          $("#mg-preview").removeClass (function (index, className) {
+            return (className.match (/(^|\s)mg-font-\S+/g) || []).join(' ');
+          });
+          $("#mg-preview").addClass($(this).data("font-unique"));
+        }else{
+          if(mgPrevFont != ""){
+            //console.log(mgPrevFont).find('a'));
+            $(mgPrevFont).find('a').click();
+            mgPrevFont = "";
+          }
+          $(".mg-step-3").removeClass('mg-step-blocked');
+        }
+        
+        mgEmbroideryType = $(this).find('span').html();
+        
+        $("#mg-preview").removeClass (function (index, className) {
+          return (className.match (/(^|\s)mg-style-\S+/g) || []).join(' ');
+        });
+        $("#mg-preview").addClass($(this).data('style'));
+        maxLetters = parseInt($(this).data('max-letters'));
+        if($(this).data('max-letters-second')){
+          maxLettersSecond = parseInt($(this).data('max-letters-second'));
+        }else{
+          maxLettersSecond = maxLetters;
+        }
+        
+        if($(this).data('min-letters')){
+          minLetters = parseInt($(this).data('min-letters'));
+        }else{
+          minLetters = maxLetters;
+        }
+        if($(this).hasClass("mg-monogram-font")){
+          previewDefault = "abc";
+        }else if($(this).hasClass("mg-monogram-name")){
+          previewDefault = "Name";
+        }else if($(this).hasClass("mg-monogram-diamonds") || $(this).hasClass("mg-monogram-wreath")){
+          previewDefault = "A";
+        }else{
+          previewDefault = "abc";
+        }
+        
+        $(".mg-max-letters").html(maxLetters);
+        $(".mg-max-letters-second").html(maxLettersSecond);
+        $(".mg-letters").attr("maxlength", maxLetters);
+        $("#mg-letters-2").attr("maxlength", maxLettersSecond);
+        /*$(".mg-letters").each(function(){
+          if($(this).val().length != maxLetters){
+            $(this).val(previewDefault)
+          }else{
+            $(this).val($(this).val().substring(0,maxLetters));
+          }
+        });*/
+        
+        if($("#mg-letters").val().length != maxLetters){
+          $("#mg-letters").val(previewDefault)
+        }else{
+          $("#mg-letters").val($("#mg-letters").val().substring(0,maxLetters));
+        }
+        $("#mg-letters-2").val($("#mg-letters-2").val().substring(0,maxLettersSecond));
+        
+        var text = $("#mg-letters").val();
+        if($("#mg-letters-2").length && $("#mg-letters-2").val() != ""){
+          text += '|' + $("#mg-letters-2").val();
+        }
+        if($(this).hasClass("mg-monogram-font")){
+          text = text.toUpperCase();
+        }
+        mgLetters = text;
+        
+        mgPreview(text);
+        showPreview();
+        $(this).closest('.mg-step-content').slideUp();
+        //$('.mg-steps .mg-step-2 .mg-step-content').slideDown();
+        $('.mg-steps .mg-step-3 .mg-step-content').slideDown();
+      });
+      $(document).on("input", ".mg-letters", function(event){
+        var value = $("#mg-letters").val();
+        var value2 = false;
+        if($("#mg-letters-2").length && $("#mg-letters-2").val() != ""){
+          var value2 = $("#mg-letters-2").val();
+        }
+        
+        if(
+          (value.length == maxLetters || (value.length >= minLetters && value.length <= maxLetters)) 
+          /*&&
+          (value2 === false || (value2.length == maxLetters || (value2.length >= minLetters && value2.length <= maxLetters)))*/
+        ){
+          mgLetters = value;
+          if(value2 !== false){
+            mgLetters += "|" + value2;
+          }
+          mgPreview(mgLetters);
+          showPreview();
+        }
+      });
+      function showPreview(){
+        if($("#mg-preview").attr('class').indexOf('mg-style') !== -1 /*&& $("#mg-preview").attr('class').indexOf('mg-color') !== -1*/ && $("#mg-preview").attr('class').indexOf('mg-font') !== -1){
+          $(".mg-btn-confirm").removeClass('disabled').addClass('enabled');
+          $("#mg-preview .mg-container").show();
+        }else if($("#mg-preview").attr('class').indexOf('monogram') !== -1 /*&& $("#mg-preview").attr('class').indexOf('mg-color') !== -1*/){
+          $(".mg-btn-confirm").removeClass('disabled').addClass('enabled');
+          $("#mg-preview .mg-container").show();
+        }else{
+          $(".mg-btn-confirm").removeClass('enabled').addClass('disabled');
+          $("#mg-preview .mg-container").hide();
+        }
+      }
+      function mgPreview(text){
+        $("#mg-preview .mg-container .mg-container-inner").html("");
+        var secondLine = false;
+        for (var i = 0, len = text.length; i < len; i++) {
+          if(text[i] == "|"){
+            secondLine = true;
+            $("#mg-preview .mg-container .mg-container-inner").append("<br/>");
+          }else{
+            $("#mg-preview .mg-container .mg-container-inner").append("<span class='mg-letter-" + (i+1) + " " + (secondLine?'second-line':'') + "'>" + text[i] + "</span>");
+          }
+        }
+        //$.each(text, function (i, el) {
+          //$("#mg-preview .mg-container").append("<span class='mg-letter-"+(i+1)+"'>" + el + "</span>");
+        //});
+      }
+      
+      $(document).on("click", ".mg-monogram-color", function(event){
+        $(".mg-monogram-color").parent().removeClass('mg-selected');
+        $(this).parent().addClass('mg-selected');
+        $("#mg-preview").removeClass (function (index, className) {
+          return (className.match (/(^|\s)mg-color-\S+/g) || []).join(' ');
+        });
+        $("#mg-preview").addClass($(this).data('color'));
+        //mgFontColor = $(this).find('span').html();
+        showPreview();
+        $(this).closest('.mg-step-content').slideUp();
+        $('.mg-steps .mg-step-3 .mg-step-content').slideDown();
+      });
+      
+      
+      $(document).on("click", ".mg-monogram-font-family", function(event){
+        $(".mg-monogram-font-family").parent().removeClass('mg-selected');
+        $(this).parent().addClass('mg-selected');
+        
+        $("#mg-preview").removeClass (function (index, className) {
+          return (className.match (/(^|\s)mg-font-\S+/g) || []).join(' ');
+        });
+        $("#mg-preview").addClass($(this).data('font'));
+        mgFont = $(this).find('span').html();
+        showPreview();
+        $(this).closest('.mg-step-content').slideUp();
+        $('.mg-steps .mg-step-4 .mg-step-content').slideDown();
+      });
+      
+      $(document).on("click", ".mg-btn-confirm", function(event){
+        if($(this).hasClass('enabled')){
+          $("#mg-hidden-embroidery-type").val(mgEmbroideryType);
+          //$("#mg-hidden-font-color").val(mgFontColor);
+          $("#mg-hidden-font").val(mgFont);
+          $("#mg-hidden-letters").val(mgLetters);
+
+          $.fancybox.close();
+        }
+      });
+      /*var update_fontsize = function(){
+        var fontSize = parseInt($("#mg-preview").width()/3)+"px";
+        var lineHeight = parseInt($("#mg-preview").width())+"px";
+        $("#mg-preview span").css('font-size', fontSize);
+        $("#mg-preview span").css('line-height', lineHeight);
+      };
+      
+      update_fontsize();
+      $(window).resize(function() {
+        update_fontsize();
+      });*/
+      
+      $(document).on("click", "#monogramming-pop-up h1 a", function(event){
+        event.preventDefault();
+        $(this).parent().parent().find('.mg-step-content').slideToggle();
+      });
+    });
+    
+  });
+//}
